@@ -1,7 +1,8 @@
 package com.polyglot;
 
+import com.polyglot.service.ExecutorService;
+
 import java.util.*;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -13,9 +14,9 @@ import static com.polyglot.service.TranslationService.translateKey;
 
 public class Main {
 
-    private static final int THREAD_LIMIT = 1;
-
-    private static final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_LIMIT);
+    //    private static final int THREAD_LIMIT = 1;
+    //
+    //    private static final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_LIMIT);
 
     public static void main(String[] args) throws InterruptedException {
         final String sourceLanguage = SOURCE_LANGUAGE; // English by default
@@ -56,14 +57,14 @@ public class Main {
 
             // If no missing keys, no tasks for execute.
             missingKeys.forEach((key) -> {
-                executorService.submit(() -> {
+                ExecutorService.getExecutor().submit(() -> {
                     targetMap.put(key, translateKey(sourceMap.get(key), sourceLanguage, targetLanguage));
                 });
             });
         });
 
-        executorService.shutdown();
-        executorService.awaitTermination(360, TimeUnit.MINUTES);
+        ExecutorService.getExecutor().shutdown();
+        ExecutorService.getExecutor().awaitTermination(360, TimeUnit.MINUTES);
 
         persistTranslations(allTranslationsMatrix);
     }

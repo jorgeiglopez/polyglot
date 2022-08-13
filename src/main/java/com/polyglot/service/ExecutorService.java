@@ -8,4 +8,8 @@ public class ExecutorService {
 
     private static final java.util.concurrent.ExecutorService executorService = Executors.newFixedThreadPool(THREAD_LIMIT);
 
+    public static java.util.concurrent.ExecutorService getExecutor() {
+        return executorService;
+    }
+
 }
