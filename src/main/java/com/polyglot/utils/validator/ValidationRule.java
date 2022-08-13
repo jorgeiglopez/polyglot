@@ -1,9 +1,7 @@
 package com.polyglot.utils.validator;
 
-public interface ValidationRule {
+public interface ValidationRule<T> {
 
-    boolean validate();
-
-    void validateWithException();
+    void validate(T t);
 
 }

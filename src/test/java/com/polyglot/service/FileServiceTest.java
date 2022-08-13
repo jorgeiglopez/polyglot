@@ -1,6 +1,6 @@
 package com.polyglot.service;
 
-import com.polyglot.utils.validator.Validator;
+import com.polyglot.utils.validator.FileValidator;
 import org.junit.jupiter.api.Test;
 
 import java.util.SortedMap;
@@ -19,31 +19,28 @@ class FileServiceTest {
     @Test
     public void testUnsupportedFile() {
         try {
-            Validator validator = new Validator();
-            validator.addJsonExtensionValidation("src/test/resources/locales/en/unsupported.txt");
-            validator.validateAllWithExceptions();
+            new FileValidator().validate("src/test/resources/locales/en/unsupported.txt");
         } catch (Exception ex) {
-            assertEquals("The file extension of [src/test/resources/locales/en/unsupported.txt] is not supported. Only JSON is supported.", ex.getMessage());
+            assertEquals("java.lang.IllegalArgumentException: The file extension of "
+                    + "[src/test/resources/locales/en/unsupported.txt] is not supported. Only JSON is supported.", ex.getMessage());
         }
     }
 
     @Test
     public void testUnexistingFile() {
         try {
-            Validator validator = new Validator();
-            validator.addFileExistValidation("src/test/resources/locales/en/unexisting.txt");
-            validator.validateAllWithExceptions();
+            new FileValidator().validate("src/test/resources/locales/en/unexisting.txt");
         } catch (Exception ex) {
-            assertEquals("The source file [src/test/resources/locales/en/unexisting.txt] doesn't exist.", ex.getMessage());
+            assertEquals("java.lang.IllegalArgumentException: The source file [src/test/resources/locales/en/unexisting.txt] doesn't exist.",
+                    ex.getMessage());
         }
     }
 
     @Test
     public void testDirectory() {
         try {
-            Validator validator = new Validator();
-            validator.addNotDirectoryValidation("src/test/resources/locales/en");
-            validator.validateAllWithExceptions();
+            new FileValidator().validate("src/test/resources/locales/en");
+
         } catch (Exception ex) {
             assertEquals("The path [src/test/resources/locales/en] belongs to a directory. Only files supported.", ex.getMessage());
         }
