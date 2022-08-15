@@ -1,9 +1,9 @@
 package com.polyglot;
 
+import com.amazonaws.util.StringUtils;
 import com.polyglot.service.ExecutorService;
 
 import java.util.*;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -14,9 +14,6 @@ import static com.polyglot.service.TranslationService.translateKey;
 
 public class Main {
 
-    //    private static final int THREAD_LIMIT = 1;
-    //
-    //    private static final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_LIMIT);
 
     public static void main(String[] args) throws InterruptedException {
         final String sourceLanguage = SOURCE_LANGUAGE; // English by default
@@ -49,7 +46,7 @@ public class Main {
             // find all keys that are in source but not dest
             Set<String> missingKeys = new HashSet<>(sourceMap.keySet());
             missingKeys.removeAll(targetMap.keySet().stream()
-                    .filter(k -> !(targetMap.get(k) == null || alwaysTranslate.contains(k)))
+                    .filter(k -> !(StringUtils.isNullOrEmpty(targetMap.get(k)) || alwaysTranslate.contains(k)))
                     .collect(Collectors.toSet()));
 
             // translate all the things

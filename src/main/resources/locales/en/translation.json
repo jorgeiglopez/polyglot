@@ -1,3 +1,8 @@
 {
-  "TestKey": "Will this key be translated?"
+  "TestKey": "Will this key be translated?",
+  "subAKey1": "$t(fc.store.ui.order.title)",
+  "subAKey2": "Order is: $t(fc.store.ui.order.title)!",
+  "subValue1": "{{edges.0.node.ref}}",
+  "subValue2": "Order reference is: {{edges.0.node.ref}}",
+  "subValue3": "Order is: {{node.ref}} - Fulfilment is: {{fulfilment}} - Reference: {{node.ref}}{{fulfilment}}"
 }

@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 
 public class Configuration {
 
-    // For test
+    // TODO: make it read from config file.
+
+    // For testing
     public static final String LOCALES_FOLDER_PATH = "src/main/resources/locales";
 
     public static final String SOURCE_LANGUAGE = "en";
@@ -32,6 +34,10 @@ public class Configuration {
 
     public static Map<String, String> getTargetLangFiles() {
         return Arrays.stream(TARGET_LANGUAGE).collect(Collectors.toMap(Function.identity(), Configuration::getFilePath));
+    }
+
+    public static boolean isSourceLang(String filepath) {
+        return filepath.endsWith(SOURCE_LANGUAGE.concat(File.separator).concat(FILE_NAME));
     }
 
 }

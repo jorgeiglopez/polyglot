@@ -11,8 +11,8 @@ public class GenericValidator<T> implements Validable<T> {
         this.rules.addAll(rules);
     }
 
-    public GenericValidator(ValidatorsLibrary... rules) {
-        for (ValidatorsLibrary item : rules) {
+    public GenericValidator(Validators... rules) {
+        for (Validators item : rules) {
             try {
                 this.rules.add((Validable<T>) item.getRule());
             } catch (ClassCastException ignored) {
@@ -23,5 +23,11 @@ public class GenericValidator<T> implements Validable<T> {
     @Override
     public void validate(final T toValidate) {
         rules.forEach(rule -> rule.validate(toValidate));
+    }
+
+    @Override public void validate(T... t) {
+        for (T current : t) {
+            validate(current);
+        }
     }
 }

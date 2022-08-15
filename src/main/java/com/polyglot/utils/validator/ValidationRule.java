@@ -18,4 +18,10 @@ public class ValidationRule<T> implements Validable<T> {
             throw new IllegalArgumentException(errorMessage);
         }
     }
+
+    @Override public void validate(T... t) {
+        for (T current : t) {
+            validate(current);
+        }
+    }
 }

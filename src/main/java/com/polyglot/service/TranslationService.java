@@ -1,14 +1,15 @@
 package com.polyglot.service;
 
 import com.amazonaws.services.translate.model.TranslateTextRequest;
-import com.amazonaws.services.translate.model.TranslateTextResult;
-import com.amazonaws.util.StringUtils;
 import com.polyglot.aws.AwsTranslateClient;
+import com.polyglot.utils.validator.GenericValidator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.polyglot.utils.validator.Validators.STRING_NOT_NULL;
 
 public class TranslationService {
 
@@ -17,14 +18,17 @@ public class TranslationService {
     private static final Pattern VARIABLES = Pattern.compile("\\{\\{.*?\\}\\}");
 
     public static String translateKey(final String value, final String fromLang, final String toLang) {
-        final List<String> replacements = new ArrayList<>();
+        new GenericValidator<String>(STRING_NOT_NULL).validate(value, fromLang, toLang);
         String valueForTranslation = value;
+        StringBuilder placeholders = new StringBuilder();
+        final List<String> replacements = new ArrayList<>();
 
         // don't want to translate cross-references, e.g. $t(fc.om.ui.order.title)
         Matcher refMatcher = REFERENCES.matcher(valueForTranslation);
         while (refMatcher.find()) {
             String match = refMatcher.group();
             valueForTranslation = valueForTranslation.replace(match, String.format("[%s]", replacements.size()));
+            placeholders.append(valueForTranslation.trim());
             replacements.add(match);
         }
 
@@ -33,36 +37,34 @@ public class TranslationService {
         while (varMatcher.find()) {
             String match = varMatcher.group();
             valueForTranslation = valueForTranslation.replace(match, String.format("[%s]", replacements.size()));
+            placeholders.append(valueForTranslation.trim());
             replacements.add(match);
         }
 
-        if (StringUtils.isNullOrEmpty(valueForTranslation)) {
-            return value;
+        String response = valueForTranslation;
+        if (!placeholders.toString().trim().equalsIgnoreCase(valueForTranslation)) {
+            TranslateTextRequest request = new TranslateTextRequest()
+                    .withText(valueForTranslation)
+                    .withSourceLanguageCode(fromLang)
+                    .withTargetLanguageCode(toLang);
+            try {
+                response = AwsTranslateClient.getAwsTranslateClient().translateText(request).getTranslatedText();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
-        TranslateTextRequest request = new TranslateTextRequest()
-                .withText(valueForTranslation)
-                .withSourceLanguageCode(fromLang)
-                .withTargetLanguageCode(toLang);
-
-        try {
-            TranslateTextResult result = AwsTranslateClient.getAwsTranslateClient().translateText(request);
-            String response = result.getTranslatedText();
-
-            // swap our references and variables back in
+        if (replacements.size() > 0) {
             for (int i = 0; i < replacements.size(); i++) {
                 response = response.replaceAll(
                         String.format("\\[[\\s]*%s[\\s]*\\]", i),
                         Matcher.quoteReplacement(replacements.get(i))
                 );
             }
-
-            System.out.println(String.format(" - [%s => %s]: [%s  ===>  %s]", fromLang, toLang, value, response));
-            return response;
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        return null;
+        System.out.printf("   - [%s => %s]: [%s  ===>  %s]%n", fromLang, toLang, value, response);
+        return response;
     }
 }
