@@ -17,12 +17,11 @@ class FileServiceTest {
     }
 
     @Test
-    public void testUnsupportedFile() {
+    public void testUnsupportedFileExtension() {
         try {
             new FileValidator().validate("src/test/resources/locales/en/unsupported.txt");
         } catch (Exception ex) {
-            assertEquals("java.lang.IllegalArgumentException: The file extension of "
-                    + "[src/test/resources/locales/en/unsupported.txt] is not supported. Only JSON is supported.", ex.getMessage());
+            assertEquals("The file extension is not supported. Only JSON is supported.", ex.getMessage());
         }
     }
 
@@ -31,7 +30,7 @@ class FileServiceTest {
         try {
             new FileValidator().validate("src/test/resources/locales/en/unexisting.txt");
         } catch (Exception ex) {
-            assertEquals("java.lang.IllegalArgumentException: The source file [src/test/resources/locales/en/unexisting.txt] doesn't exist.",
+            assertEquals("The source file doesn't exist.",
                     ex.getMessage());
         }
     }
@@ -42,7 +41,7 @@ class FileServiceTest {
             new FileValidator().validate("src/test/resources/locales/en");
 
         } catch (Exception ex) {
-            assertEquals("The path [src/test/resources/locales/en] belongs to a directory. Only files supported.", ex.getMessage());
+            assertEquals("The path belongs to a directory. Only files supported.", ex.getMessage());
         }
     }
 

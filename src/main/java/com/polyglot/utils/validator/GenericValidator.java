@@ -3,17 +3,22 @@ package com.polyglot.utils.validator;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class GenericValidator<T> implements ValidationRule<T> {
+public class GenericValidator<T> implements Validable<T> {
 
-    private final List<ValidationRule<T>> rules = new LinkedList<>();
+    private final List<Validable<T>> rules = new LinkedList<>();
 
-    public GenericValidator(List<ValidationRule<T>> rules) {
+    public GenericValidator(List<Validable<T>> rules) {
         this.rules.addAll(rules);
     }
 
-    //    public GenericValidator(ValidationRule rule...) {
-    //
-    //    }
+    public GenericValidator(ValidatorsLibrary... rules) {
+        for (ValidatorsLibrary item : rules) {
+            try {
+                this.rules.add((Validable<T>) item.getRule());
+            } catch (ClassCastException ignored) {
+            }
+        }
+    }
 
     @Override
     public void validate(final T toValidate) {

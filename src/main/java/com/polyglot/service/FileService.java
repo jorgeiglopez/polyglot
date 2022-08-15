@@ -2,7 +2,7 @@ package com.polyglot.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.polyglot.utils.Mapper;
-import com.polyglot.utils.validator.FileValidator;
+import com.polyglot.utils.validator.GenericValidator;
 
 import java.io.*;
 import java.util.Map;
@@ -10,12 +10,13 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import static com.polyglot.Configuration.getTargetLangFiles;
+import static com.polyglot.utils.validator.ValidatorsLibrary.*;
 
 public class FileService {
 
     public static SortedMap<String, String> loadFile(String filepath) {
-        new FileValidator().validate(filepath);
-
+        new GenericValidator<String>(OBJECT_NOT_NULL, FILE_EXIST, FILE_TYPE, FILE_EXTENSION)
+                .validate(filepath);
         // TODO: check for duplicate keys
         SortedMap<String, String> translation = new TreeMap<>();
 
