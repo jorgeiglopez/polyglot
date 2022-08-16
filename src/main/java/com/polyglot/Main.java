@@ -7,19 +7,18 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.polyglot.Configuration.*;
+import static com.polyglot.ConfigGenerator.*;
 import static com.polyglot.service.FileService.loadFile;
 import static com.polyglot.service.FileService.persistTranslations;
 import static com.polyglot.service.TranslationService.translateKey;
 
 public class Main {
 
-
     public static void main(String[] args) throws InterruptedException {
-        final String sourceLanguage = SOURCE_LANGUAGE; // English by default
+        final String sourceLanguage = getSourceLanguage(); // English by default
         final String sourceLangFile = getDefaultLangPath();
 
-        final Map<String, String> targetLangFiles = getTargetLangFiles(); // From Configuration
+        final Map<String, String> targetLangFiles = getTargetLangFiles(); // From ConfigGenerator
 
         SortedMap<String, String> sourceMap = new TreeMap<>();
 

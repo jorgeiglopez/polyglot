@@ -5,10 +5,12 @@ import com.polyglot.utils.Mapper;
 import com.polyglot.utils.validator.GenericValidator;
 
 import java.io.*;
-import java.util.*;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
-import static com.polyglot.Configuration.getTargetLangFiles;
-import static com.polyglot.Configuration.isSourceLang;
+import static com.polyglot.ConfigGenerator.getTargetLangFiles;
+import static com.polyglot.ConfigGenerator.isSourceLang;
 import static com.polyglot.utils.validator.Validators.*;
 
 public class FileService {
@@ -40,20 +42,25 @@ public class FileService {
         return Mapper.getMapper().writeValueAsString(rawContent)
                 .replaceAll(" : ", ": ")
                 .replaceAll(" ", "");
+        // Todo: Handle arrays output format
+    }
+
+    public static void saveFile(String destination, SortedMap<String, ? super String> content) {
+        File targetFile = new File(destination);
+        targetFile.getParentFile().mkdirs();
+
+        try (BufferedWriter writer = new BufferedWriter(new java.io.FileWriter(targetFile))) {
+            String contentJson = formatJsonContent((SortedMap<String, String>) content);
+            writer.write(contentJson);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void persistTranslations(Map<String, SortedMap<String, String>> allTranslations) {
         allTranslations.forEach((lang, content) -> {
-            File targetFile = new File(getTargetLangFiles().get(lang));
-            targetFile.getParentFile().mkdirs();
-
-            try (BufferedWriter writer = new BufferedWriter(new java.io.FileWriter(targetFile))) {
-                String contentJson = formatJsonContent(content);
-                System.out.printf("Finished translating language [%s]%n", lang);
-                writer.write(contentJson);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            saveFile(getTargetLangFiles().get(lang), content);
+            System.out.printf("Finished translating language [%s]%n", lang);
         });
     }
 }
