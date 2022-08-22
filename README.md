@@ -1,21 +1,39 @@
-# README
+# README: Polyglot
 
 Polyglot is an automated translator for internationalisation files based on AWS Translate service.
 
 ### Restrictions
-A ) Reads JSON and writes JSON as output
 
-B ) You need AWS credentials to call AWS Translate API
+- Reads JSON and writes JSON as output
+
+- You need AWS credentials to call AWS Translate API
+
+---------
 
 ## How to use
-1 - Go to the Configuration class and set the following:
-- LOCALES_FOLDER_PATH: The path to the folder which contains all the various languages folder with their respective files
-- SOURCE_LANGUAGE: The folder name (E.g.: "en" or "fr")
-- FILE_NAME: The name of the JSON file that contains the keys and values to translate.
-- TARGET_LANGUAGE: An array of all the target laguages
 
-// TODO: include a list of supported languages
+### 1) Configuration
 
-2 - Give a unique key to each word/phrase you want to translate, and set the value in the source language
+Go to `ConfigGenerator` to configure:
 
-3 - Run the main method. Ready!
+A - Source language (English default)
+
+B - Target languages
+
+C - File names and project folders
+
+D - Translation exceptions for unsupported languages (en-US and es-MX)
+
+### 2) AWS Credentials
+
+You should have your AWS credentials configured already.
+
+If your account uses SSO, no changes are required. Just update `ConfigGenerator` the variable `AWS_PROFILE_NAME`.
+
+If You use a different authentication method, replace the crendetials provider in the class `ClientProvider`
+
+E - Then login by executing: `aws sso login --profile=<PROFILE_NAME>`
+
+### 3) Execute translations
+
+F - Go to `Main` and execute the main() method.
