@@ -1,7 +1,6 @@
 {
-  "testKey": "Will this key be translated? I don't know but it should be fourth in order.",
-  "aTestKey": "This should be first",
-  "cTestKey": "Third position here!",
+  "aTestKey": "overriding aTestKey... this shouldn't happen!",
   "bTestKey": "This should be second",
-  "aTestKey": "overriding aTestKey... this shouldn't happen!"
+  "cTestKey": "Third position here!",
+  "testKey": "Will this key be translated? I don't know but it should be fourth in order."
 }

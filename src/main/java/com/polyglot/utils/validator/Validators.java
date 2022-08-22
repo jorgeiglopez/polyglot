@@ -1,6 +1,5 @@
 package com.polyglot.utils.validator;
 
-import com.amazonaws.util.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -18,7 +17,7 @@ public enum Validators {
     ),
     STRING_NOT_NULL(
             new ValidationRule<String>(
-                    s -> !StringUtils.isNullOrEmpty(s),
+                    s -> s != null && s.trim().length() > 0,
                     "Input string is null or empty."
             )
     ),

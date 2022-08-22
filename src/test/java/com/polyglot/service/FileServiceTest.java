@@ -14,7 +14,7 @@ class FileServiceTest {
 
     @Test
     public void testLoadFile() {
-        SortedMap<String, String> myMap = FileService.loadFile("src/test/resources/locales/en/translation.json");
+        SortedMap<String, String> myMap = FileService.loadFileSourceLang("src/test/resources/locales/en/translation.json");
         assertEquals("[aTestKey, bTestKey, cTestKey, testKey]", String.valueOf(myMap.keySet()));
 
     }

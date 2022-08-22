@@ -11,13 +11,15 @@ public class ValidationRule<T> implements Validable<T> {
 
     private final String errorMessage;
 
-    @Override public void validate(T t) {
+    @Override
+    public void validate(T t) {
         if (!predicate.test(t)) {
             throw new IllegalArgumentException(errorMessage);
         }
     }
 
-    @Override public void validate(T... t) {
+    @Override
+    public void validate(T... t) {
         for (T current : t) {
             validate(current);
         }

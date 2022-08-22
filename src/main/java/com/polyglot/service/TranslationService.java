@@ -1,8 +1,8 @@
 package com.polyglot.service;
 
-import com.amazonaws.services.translate.model.TranslateTextRequest;
-import com.polyglot.aws.AwsTranslateClient;
+import com.polyglot.aws.ClientProvider;
 import com.polyglot.utils.validator.GenericValidator;
+import software.amazon.awssdk.services.translate.model.TranslateTextRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,37 +18,45 @@ public class TranslationService {
     private static final Pattern VARIABLES = Pattern.compile("\\{\\{.*?\\}\\}");
 
     public static String translateKey(final String value, final String fromLang, final String toLang) {
-        new GenericValidator<String>(STRING_NOT_NULL).validate(value, fromLang, toLang);
+        GenericValidator.of(STRING_NOT_NULL).validate(value, fromLang, toLang);
         String valueForTranslation = value;
         StringBuilder placeholders = new StringBuilder();
         final List<String> replacements = new ArrayList<>();
 
-        // don't want to translate cross-references, e.g. $t(fc.om.ui.order.title)
+        // don't want to translate cross-references, e.g. $t(order.title)
         Matcher refMatcher = REFERENCES.matcher(valueForTranslation);
         while (refMatcher.find()) {
             String match = refMatcher.group();
-            valueForTranslation = valueForTranslation.replace(match, String.format("[%s]", replacements.size()));
-            placeholders.append(valueForTranslation.trim());
+            final String placeholder = String.format("[%s]", replacements.size());
+            valueForTranslation = valueForTranslation.replace(match, placeholder);
+            placeholders.append(placeholder);
             replacements.add(match);
         }
 
-        // don't want to translate variable names, e.g. {{order.ref}}
+        // don't want to translate variable names, e.g. {{node.date}}
         Matcher varMatcher = VARIABLES.matcher(valueForTranslation);
         while (varMatcher.find()) {
             String match = varMatcher.group();
-            valueForTranslation = valueForTranslation.replace(match, String.format("[%s]", replacements.size()));
-            placeholders.append(valueForTranslation.trim());
+            final String placeholder = String.format("[%s]", replacements.size());
+            valueForTranslation = valueForTranslation.replace(match, placeholder);
+            placeholders.append(placeholder);
             replacements.add(match);
         }
 
         String response = valueForTranslation;
         if (!placeholders.toString().trim().equalsIgnoreCase(valueForTranslation)) {
-            TranslateTextRequest request = new TranslateTextRequest()
-                    .withText(valueForTranslation)
-                    .withSourceLanguageCode(fromLang)
-                    .withTargetLanguageCode(toLang);
+            // TODO: Implement batch translations
+
+            TranslateTextRequest request = TranslateTextRequest.builder()
+                    .text(valueForTranslation)
+                    .sourceLanguageCode(fromLang)
+                    .targetLanguageCode(toLang)
+                    .build();
             try {
-                response = AwsTranslateClient.getAwsTranslateClient().translateText(request).getTranslatedText();
+                response = ClientProvider.getTranslateClient().translateText(request).translatedText();
+                if (response.equals(valueForTranslation)) { // Avoid writing a value without translation.
+                    return null;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -64,7 +72,7 @@ public class TranslationService {
             }
         }
 
-        System.out.printf("   - [%s => %s]: [%s  ===>  %s]%n", fromLang, toLang, value, response);
+        System.out.printf(" - [%s => %s]: [%s  ===>  %s]%n", fromLang, toLang, value, response);
         return response;
     }
 }

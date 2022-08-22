@@ -20,12 +20,17 @@ public class GenericValidator<T> implements Validable<T> {
         }
     }
 
+    public static <T> GenericValidator<T> of(Validators... rules) {
+        return new GenericValidator<>(rules);
+    }
+
     @Override
     public void validate(final T toValidate) {
         rules.forEach(rule -> rule.validate(toValidate));
     }
 
-    @Override public void validate(T... t) {
+    @Override
+    public void validate(T... t) {
         for (T current : t) {
             validate(current);
         }
