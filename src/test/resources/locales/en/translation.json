@@ -1,6 +1,8 @@
 {
-  "aTestKey": "overriding aTestKey... this shouldn't happen!",
-  "bTestKey": "This should be second",
-  "cTestKey": "Third position here!",
-  "testKey": "Will this key be translated? I don't know but it should be fourth in order."
+  "TestKey": "Will this key be translated?",
+  "subAKey1": "$t(fc.store.ui.order.title)",
+  "subAKey2": "The Order is: $t(fc.store.ui.order.title)!",
+  "subValue1": "{{edges.0.node.ref}}",
+  "subValue2": "The Order reference is: {{edges.0.node.ref}}",
+  "subValue3": "Order: {{node.ref}} - Fulfilment: {{fulfilment}} - Reference: {{node.ref}}{{fulfilment}}"
 }
